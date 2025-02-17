@@ -9,7 +9,7 @@ export interface GrowthBookFeatures {
   test_value: string;
 }
 
-export const initGrowthBook = (uuid: string) => {
+export const growthBook = (() => {
   const feature = config.features.growthBook;
 
   if (!feature.isEnabled) {
@@ -21,7 +21,7 @@ export const initGrowthBook = (uuid: string) => {
     clientKey: feature.clientKey,
     enableDevMode: config.app.isDev,
     attributes: {
-      id: uuid,
+      id: mixpanel.getUuid(),
       chain_id: config.chain.id,
     },
     trackingCallback: (experiment, result) => {
@@ -37,7 +37,7 @@ export const initGrowthBook = (uuid: string) => {
       });
     },
   });
-};
+})();
 
 function getStorageValue(): Array<unknown> | undefined {
   const item = window.localStorage.getItem(STORAGE_KEY);

@@ -10,6 +10,7 @@ import * as cookies from 'lib/cookies';
 import dayjs from 'lib/date/dayjs';
 import getQueryParamString from 'lib/router/getQueryParamString';
 
+import getUuid from './getUuid';
 import * as userProfile from './userProfile';
 
 export default function useMixpanelInit() {
@@ -29,8 +30,7 @@ export default function useMixpanelInit() {
       debug: Boolean(debugFlagQuery.current || debugFlagCookie),
     };
     const isAuth = Boolean(cookies.get(cookies.NAMES.API_TOKEN));
-
-    const uuid = cookies.get(cookies.NAMES.UUID);
+    const userId = getUuid();
 
     mixpanel.init(feature.projectToken, mixpanelConfig);
     mixpanel.register({
@@ -41,9 +41,9 @@ export default function useMixpanelInit() {
       'Viewport height': window.innerHeight,
       Language: window.navigator.language,
       'Device type': capitalize(deviceType),
-      'User id': uuid,
+      'User id': userId,
     });
-    mixpanel.identify(uuid);
+    mixpanel.identify(userId);
     userProfile.set({
       'Device Type': capitalize(deviceType),
       ...(isAuth ? { 'With Account': true } : {}),
@@ -56,7 +56,7 @@ export default function useMixpanelInit() {
     if (debugFlagQuery.current && !debugFlagCookie) {
       cookies.set(cookies.NAMES.MIXPANEL_DEBUG, 'true');
     }
-  }, [ ]);
+  }, []);
 
   return isInited;
 }
